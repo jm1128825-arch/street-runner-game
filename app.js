@@ -3,8 +3,12 @@ const tg = window.Telegram.WebApp;
 tg.ready();
 tg.expand();
 
+
 const gameArea = document.getElementById("gameArea");
+const trail = document.querySelector(".trail");
+
 const player = document.getElementById("player");
+const lion = document.getElementById("lion");
 const objects = document.getElementById("objects");
 
 const scoreDisplay = document.getElementById("score");
@@ -15,48 +19,68 @@ const startScreen = document.getElementById("startScreen");
 const gameOverScreen = document.getElementById("gameOver");
 const finalScore = document.getElementById("finalScore");
 
-const leftButton = document.getElementById("leftButton");
-const rightButton = document.getElementById("rightButton");
-const jumpButton = document.getElementById("jumpButton");
+const distanceMessage =
+    document.getElementById("distanceMessage");
 
-const telegramUser = tg.initDataUnsafe?.user;
+const leftButton =
+    document.getElementById("leftButton");
+
+const rightButton =
+    document.getElementById("rightButton");
+
+const jumpButton =
+    document.getElementById("jumpButton");
+
+
+/* TELEGRAM USER */
+
+const telegramUser =
+    tg.initDataUnsafe?.user;
 
 if (telegramUser) {
+
     document.getElementById("playerName").textContent =
-        `👋 ${telegramUser.first_name}`;
+        `🏃 ${telegramUser.first_name} — RUN!`;
 }
 
 
-/* GAME SETTINGS */
+/* LANES */
 
 const lanes = [16.5, 50, 83.5];
 
 let currentLane = 1;
 
+
+/* GAME */
+
 let score = 0;
 let coins = 0;
 
 let bestScore =
-    Number(localStorage.getItem("runnerBest")) || 0;
+    Number(localStorage.getItem("forestRunnerBest")) || 0;
 
-let running = false;
+let gameRunning = false;
+
 let jumping = false;
-
-let gameSpeed = 4;
 
 let lastTime = 0;
 let spawnTimer = 0;
+
 let animationFrame;
 
-
-/* DISPLAY BEST SCORE */
-
-bestDisplay.textContent = bestScore;
-
-
-/* OBJECTS */
+let gameSpeed = 4;
 
 let gameObjects = [];
+
+
+/* LION DISTANCE */
+
+let lionDistance = 0;
+
+
+/* DISPLAY */
+
+bestDisplay.textContent = bestScore;
 
 
 /* START GAME */
@@ -69,17 +93,18 @@ function startGame() {
 
     gameObjects = [];
 
-    currentLane = 1;
-
     score = 0;
-
     coins = 0;
+
+    currentLane = 1;
 
     gameSpeed = 4;
 
-    running = true;
+    lionDistance = 0;
 
     jumping = false;
+
+    gameRunning = true;
 
     spawnTimer = 0;
 
@@ -87,17 +112,36 @@ function startGame() {
 
     coinsDisplay.textContent = "0";
 
-    player.style.left = `${lanes[currentLane]}%`;
-
-    player.style.bottom = "34px";
-
-    player.style.transform = "translateX(-50%)";
+    distanceMessage.textContent =
+        "🦁 RUN! RUN! RUN!";
 
     startScreen.style.display = "none";
 
     gameOverScreen.style.display = "none";
 
-    lastTime = performance.now();
+
+    player.style.left =
+        `${lanes[currentLane]}%`;
+
+    player.style.bottom =
+        "31px";
+
+    player.style.transform =
+        "translateX(-50%)";
+
+
+    lion.style.left =
+        `${lanes[currentLane]}%`;
+
+    lion.style.bottom =
+        "0px";
+
+    lion.style.transform =
+        "translateX(-50%)";
+
+
+    lastTime =
+        performance.now();
 
     animationFrame =
         requestAnimationFrame(gameLoop);
@@ -108,33 +152,71 @@ function startGame() {
 
 function gameLoop(timestamp) {
 
-    if (!running) return;
+    if (!gameRunning) return;
+
 
     const delta =
         Math.min(timestamp - lastTime, 40);
 
     lastTime = timestamp;
 
-    spawnTimer += delta;
 
-    /* SCORE */
+    /* DISTANCE */
 
-    score += delta * 0.01;
+    score +=
+        delta * 0.012;
 
-    scoreDisplay.textContent =
+
+    const displayedScore =
         Math.floor(score);
 
+    scoreDisplay.textContent =
+        displayedScore;
 
-    /* MAKE GAME FASTER */
+
+    /* SPEED */
 
     gameSpeed =
-        4 + Math.min(score / 200, 5);
+        4 + Math.min(score / 150, 7);
+
+
+    /* LION GETS CLOSER */
+
+    lionDistance +=
+        delta * 0.0006;
+
+
+    const lionBase =
+        Math.min(lionDistance, 35);
+
+
+    lion.style.bottom =
+        `${lionBase}px`;
+
+
+    /*
+       The lion becomes slightly larger
+       as the player gets farther into the run.
+    */
+
+    const lionScale =
+        1 + Math.min(score / 1500, 0.22);
+
+    lion.style.fontSize =
+        `${54 * lionScale}px`;
 
 
     /* SPAWN */
 
+    spawnTimer += delta;
+
+
     const spawnDelay =
-        Math.max(500, 1050 - score * 2);
+        Math.max(
+            420,
+            950 - score * 1.8
+        );
+
 
     if (spawnTimer >= spawnDelay) {
 
@@ -146,48 +228,78 @@ function gameLoop(timestamp) {
 
     /* MOVE OBJECTS */
 
-    for (let i = gameObjects.length - 1; i >= 0; i--) {
+    for (
+        let i = gameObjects.length - 1;
+        i >= 0;
+        i--
+    ) {
 
-        const object = gameObjects[i];
+        const object =
+            gameObjects[i];
+
 
         object.y +=
             gameSpeed * (delta / 16);
+
 
         object.element.style.top =
             `${object.y}px`;
 
 
-        /* COLLISION */
+        /* COLLECT COIN */
 
-        if (checkCollision(object)) {
+        if (
+            object.type === "coin" &&
+            checkCollision(object)
+        ) {
 
-            if (object.type === "coin") {
+            coins++;
 
-                coins++;
+            coinsDisplay.textContent =
+                coins;
 
-                coinsDisplay.textContent =
-                    coins;
+            removeObject(i);
 
-                removeObject(i);
-
-                continue;
-            }
-
-            if (object.type === "obstacle") {
-
-                endGame();
-
-                return;
-            }
+            continue;
         }
 
 
-        /* REMOVE OFF SCREEN */
+        /* HIT TREE / ROCK */
 
-        if (object.y > gameArea.clientHeight + 80) {
+        if (
+            object.type === "obstacle" &&
+            !jumping &&
+            checkCollision(object)
+        ) {
+
+            endGame();
+
+            return;
+        }
+
+
+        /* REMOVE OBJECT */
+
+        if (
+            object.y >
+            trail.clientHeight + 100
+        ) {
 
             removeObject(i);
         }
+    }
+
+
+    /*
+       If the lion gets very close,
+       the player loses.
+    */
+
+    if (lionDistance >= 35) {
+
+        endGame();
+
+        return;
     }
 
 
@@ -196,34 +308,67 @@ function gameLoop(timestamp) {
 }
 
 
-/* SPAWN OBJECT */
+/* CREATE OBJECT */
 
 function spawnObject() {
 
     const lane =
-        Math.floor(Math.random() * 3);
+        Math.floor(
+            Math.random() * 3
+        );
 
-    const isCoin =
-        Math.random() < 0.32;
 
-    const element =
-        document.createElement("div");
+    const random =
+        Math.random();
+
 
     let type;
 
-    if (isCoin) {
+
+    if (random < 0.25) {
 
         type = "coin";
-
-        element.className = "coin";
-
-        element.textContent = "🪙";
 
     } else {
 
         type = "obstacle";
+    }
 
-        element.className = "obstacle";
+
+    const element =
+        document.createElement("div");
+
+
+    /* COIN */
+
+    if (type === "coin") {
+
+        element.className =
+            "coin";
+
+        element.textContent =
+            "🪙";
+
+    }
+
+
+    /* TREE OR ROCK */
+
+    else {
+
+        element.className =
+            "obstacle";
+
+        if (Math.random() < 0.7) {
+
+            element.textContent =
+                "🌲";
+
+        } else {
+
+            element.className =
+                "rock";
+        }
     }
 
 
@@ -231,10 +376,11 @@ function spawnObject() {
         `${lanes[lane]}%`;
 
     element.style.top =
-        "-70px";
+        "-80px";
 
     element.style.transform =
         "translateX(-50%)";
+
 
     objects.appendChild(element);
 
@@ -245,7 +391,7 @@ function spawnObject() {
 
         lane: lane,
 
-        y: -70,
+        y: -80,
 
         type: type
 
@@ -253,7 +399,7 @@ function spawnObject() {
 }
 
 
-/* COLLISION CHECK */
+/* COLLISION */
 
 function checkCollision(object) {
 
@@ -264,10 +410,11 @@ function checkCollision(object) {
         object.element.getBoundingClientRect();
 
 
-    const padding = 10;
+    const padding = 8;
 
 
     return (
+
         playerRect.left + padding <
             objectRect.right &&
 
@@ -290,10 +437,12 @@ function removeObject(index) {
     const object =
         gameObjects[index];
 
+
     if (object.element) {
 
         object.element.remove();
     }
+
 
     gameObjects.splice(index, 1);
 }
@@ -303,13 +452,17 @@ function removeObject(index) {
 
 function moveLeft() {
 
-    if (!running) return;
+    if (!gameRunning) return;
+
 
     if (currentLane > 0) {
 
         currentLane--;
 
         player.style.left =
+            `${lanes[currentLane]}%`;
+
+        lion.style.left =
             `${lanes[currentLane]}%`;
     }
 }
@@ -319,13 +472,17 @@ function moveLeft() {
 
 function moveRight() {
 
-    if (!running) return;
+    if (!gameRunning) return;
+
 
     if (currentLane < 2) {
 
         currentLane++;
 
         player.style.left =
+            `${lanes[currentLane]}%`;
+
+        lion.style.left =
             `${lanes[currentLane]}%`;
     }
 }
@@ -335,21 +492,33 @@ function moveRight() {
 
 function jump() {
 
-    if (!running || jumping) return;
+    if (
+        !gameRunning ||
+        jumping
+    ) {
+        return;
+    }
+
 
     jumping = true;
 
-    player.style.bottom = "125px";
+
+    player.style.bottom =
+        "125px";
+
 
     player.style.transform =
-        "translateX(-50%) scale(1.05)";
+        "translateX(-50%) scale(1.08)";
 
 
     setTimeout(() => {
 
-        if (!running) return;
+        if (!gameRunning) return;
 
-        player.style.bottom = "34px";
+
+        player.style.bottom =
+            "31px";
+
 
         player.style.transform =
             "translateX(-50%)";
@@ -363,39 +532,6 @@ function jump() {
 
     }, 600);
 }
-
-
-/* KEYBOARD SUPPORT */
-
-document.addEventListener(
-    "keydown",
-    (event) => {
-
-        if (event.key === "ArrowLeft") {
-
-            event.preventDefault();
-
-            moveLeft();
-        }
-
-        if (event.key === "ArrowRight") {
-
-            event.preventDefault();
-
-            moveRight();
-        }
-
-        if (
-            event.key === "ArrowUp" ||
-            event.key === " "
-        ) {
-
-            event.preventDefault();
-
-            jump();
-        }
-    }
-);
 
 
 /* BUTTON CONTROLS */
@@ -416,10 +552,53 @@ jumpButton.addEventListener(
 );
 
 
-/* SWIPE SUPPORT */
+/* KEYBOARD */
+
+document.addEventListener(
+    "keydown",
+    (event) => {
+
+        if (
+            event.key ===
+            "ArrowLeft"
+        ) {
+
+            event.preventDefault();
+
+            moveLeft();
+        }
+
+
+        if (
+            event.key ===
+            "ArrowRight"
+        ) {
+
+            event.preventDefault();
+
+            moveRight();
+        }
+
+
+        if (
+            event.key ===
+            "ArrowUp" ||
+            event.key === " "
+        ) {
+
+            event.preventDefault();
+
+            jump();
+        }
+    }
+);
+
+
+/* SWIPE */
 
 let touchStartX = 0;
 let touchStartY = 0;
+
 
 gameArea.addEventListener(
     "touchstart",
@@ -446,13 +625,13 @@ gameArea.addEventListener(
             event.changedTouches[0];
 
         const dx =
-            touch.screenX - touchStartX;
+            touch.screenX -
+            touchStartX;
 
         const dy =
-            touch.screenY - touchStartY;
+            touch.screenY -
+            touchStartY;
 
-
-        /* LEFT / RIGHT SWIPE */
 
         if (Math.abs(dx) > 45) {
 
@@ -469,8 +648,6 @@ gameArea.addEventListener(
         }
 
 
-        /* UP SWIPE */
-
         if (dy < -45) {
 
             jump();
@@ -480,15 +657,19 @@ gameArea.addEventListener(
 );
 
 
-/* END GAME */
+/* GAME OVER */
 
 function endGame() {
 
-    if (!running) return;
+    if (!gameRunning) return;
 
-    running = false;
 
-    cancelAnimationFrame(animationFrame);
+    gameRunning = false;
+
+
+    cancelAnimationFrame(
+        animationFrame
+    );
 
 
     const final =
@@ -497,12 +678,15 @@ function endGame() {
 
     if (final > bestScore) {
 
-        bestScore = final;
+        bestScore =
+            final;
+
 
         localStorage.setItem(
-            "runnerBest",
+            "forestRunnerBest",
             bestScore
         );
+
 
         bestDisplay.textContent =
             bestScore;
@@ -510,13 +694,13 @@ function endGame() {
 
 
     finalScore.textContent =
-        `Score: ${final}  •  Coins: ${coins}`;
+        `Distance: ${final}  •  🪙 Coins: ${coins}`;
+
 
     gameOverScreen.style.display =
         "flex";
+
+
+    distanceMessage.textContent =
+        "🦁 The chase is over!";
 }
-
-
-/* START */
-
-startGame();
