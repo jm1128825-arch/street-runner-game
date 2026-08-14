@@ -1,0 +1,399 @@
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #07111d;
+    color: white;
+    overflow: hidden;
+    user-select: none;
+    touch-action: manipulation;
+}
+
+.game {
+    width: 100%;
+    max-width: 500px;
+    min-height: 100vh;
+    margin: auto;
+    padding: 10px 12px 16px;
+    text-align: center;
+}
+
+/* TOP SCORE */
+
+.top-bar {
+    display: flex;
+    gap: 7px;
+    margin-bottom: 6px;
+}
+
+.top-bar div {
+    flex: 1;
+    background: #142334;
+    border: 1px solid #284058;
+    border-radius: 10px;
+    padding: 7px 4px;
+}
+
+.top-bar span {
+    display: block;
+    font-size: 9px;
+    color: #9db0c2;
+}
+
+.top-bar strong {
+    display: block;
+    font-size: 20px;
+    margin-top: 2px;
+}
+
+#playerName {
+    font-size: 13px;
+    color: #aebdca;
+    margin-bottom: 7px;
+}
+
+/* GAME AREA */
+
+#gameArea {
+    position: relative;
+    width: 100%;
+    height: 510px;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 2px solid #2e455c;
+    background: #78c9f2;
+}
+
+/* SKY */
+
+.sky {
+    position: absolute;
+    inset: 0 0 48% 0;
+    background: linear-gradient(
+        #52b5ec 0%,
+        #9cdbf5 100%
+    );
+}
+
+/* CITY */
+
+.city {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 47%;
+    height: 95px;
+}
+
+.city-back {
+    opacity: 0.45;
+    background:
+        linear-gradient(
+            to top,
+            #57758d 0 65%,
+            transparent 65%
+        ),
+        repeating-linear-gradient(
+            90deg,
+            #57758d 0 28px,
+            transparent 28px 38px
+        );
+}
+
+.city-front {
+    opacity: 0.8;
+    height: 72px;
+    background:
+        linear-gradient(
+            to top,
+            #40586a 0 60%,
+            transparent 60%
+        ),
+        repeating-linear-gradient(
+            90deg,
+            #40586a 0 22px,
+            transparent 22px 31px
+        );
+}
+
+/* ROAD */
+
+.road {
+    position: absolute;
+    left: 7%;
+    right: 7%;
+    bottom: 0;
+    height: 54%;
+    background:
+        linear-gradient(
+            90deg,
+            #2f3237 0%,
+            #41444a 50%,
+            #2f3237 100%
+        );
+    border-left: 8px solid #d7d7d7;
+    border-right: 8px solid #d7d7d7;
+    overflow: hidden;
+}
+
+/* LANE LINES */
+
+.lane-line {
+    position: absolute;
+    top: -100px;
+    bottom: -100px;
+    width: 5px;
+    background: repeating-linear-gradient(
+        to bottom,
+        white 0 35px,
+        transparent 35px 70px
+    );
+    opacity: 0.85;
+}
+
+.line-one {
+    left: 33.33%;
+    transform: translateX(-50%);
+}
+
+.line-two {
+    left: 66.66%;
+    transform: translateX(-50%);
+}
+
+/* PLAYER */
+
+.player {
+    position: absolute;
+    width: 60px;
+    height: 108px;
+    left: 50%;
+    bottom: 34px;
+    transform: translateX(-50%);
+    z-index: 20;
+    transition:
+        left 0.14s ease,
+        bottom 0.15s ease,
+        transform 0.15s ease;
+}
+
+/* HEAD */
+
+.head {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    left: 16px;
+    top: 0;
+    border-radius: 50%;
+    background: #d99462;
+    border: 2px solid #744324;
+}
+
+/* BODY */
+
+.body {
+    position: absolute;
+    width: 38px;
+    height: 45px;
+    left: 11px;
+    top: 27px;
+    border-radius: 9px;
+    background: #167bca;
+    border: 2px solid #0a4e83;
+}
+
+/* ARMS */
+
+.arm {
+    position: absolute;
+    width: 10px;
+    height: 39px;
+    top: 30px;
+    background: #167bca;
+    border-radius: 8px;
+}
+
+.arm-left {
+    left: 2px;
+    transform: rotate(24deg);
+}
+
+.arm-right {
+    right: 2px;
+    transform: rotate(-24deg);
+}
+
+/* LEGS */
+
+.leg {
+    position: absolute;
+    width: 11px;
+    height: 38px;
+    top: 69px;
+    background: #262b32;
+    border-radius: 8px;
+}
+
+.leg-left {
+    left: 16px;
+    transform: rotate(8deg);
+}
+
+.leg-right {
+    right: 16px;
+    transform: rotate(-8deg);
+}
+
+/* OBJECTS */
+
+#objects {
+    position: absolute;
+    inset: 0;
+    z-index: 15;
+}
+
+/* OBSTACLE */
+
+.obstacle {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    background: #e04b35;
+    border: 3px solid #9e291c;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.25);
+}
+
+.obstacle::before {
+    content: "🚧";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 28px;
+}
+
+/* COIN */
+
+.coin {
+    position: absolute;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #ffd43b;
+    border: 3px solid #d89e00;
+    box-shadow: 0 0 12px rgba(255, 212, 59, 0.65);
+    font-size: 21px;
+    line-height: 33px;
+    text-align: center;
+}
+
+/* START SCREEN */
+
+#startScreen,
+#gameOver {
+    position: absolute;
+    inset: 0;
+    z-index: 40;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 25px;
+    background: rgba(4, 12, 20, 0.72);
+    backdrop-filter: blur(4px);
+}
+
+#gameOver {
+    display: none;
+}
+
+.game-logo,
+.game-over-icon {
+    font-size: 68px;
+}
+
+#startScreen h1,
+#gameOver h2 {
+    margin: 8px 0;
+    font-size: 28px;
+}
+
+#startScreen p,
+#gameOver p {
+    margin: 0 0 18px;
+    color: #d4dce4;
+}
+
+/* BUTTONS */
+
+#startScreen button,
+#gameOver button {
+    width: 85%;
+    max-width: 280px;
+    padding: 14px;
+    border: none;
+    border-radius: 13px;
+    background: #229ed9;
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+/* CONTROLS */
+
+.controls {
+    display: flex;
+    gap: 9px;
+    margin-top: 10px;
+}
+
+.controls button {
+    flex: 1;
+    height: 58px;
+    border: none;
+    border-radius: 12px;
+    background: #eef2f5;
+    color: #14202b;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.controls button:active {
+    transform: scale(0.93);
+}
+
+.controls small {
+    display: block;
+    font-size: 9px;
+    margin-top: -3px;
+}
+
+/* MOBILE */
+
+@media (max-height: 700px) {
+
+    .game {
+        padding-top: 6px;
+    }
+
+    #gameArea {
+        height: 430px;
+    }
+
+    .player {
+        bottom: 26px;
+    }
+}
