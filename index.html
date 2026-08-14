@@ -9,7 +9,7 @@
           maximum-scale=1.0,
           user-scalable=no">
 
-    <title>Street Runner</title>
+    <title>Lion Chase - Forest Run</title>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
@@ -23,12 +23,12 @@
     <div class="top-bar">
 
         <div>
-            <span>SCORE</span>
+            <span>DISTANCE</span>
             <strong id="score">0</strong>
         </div>
 
         <div>
-            <span>COINS</span>
+            <span>🪙 COINS</span>
             <strong id="coins">0</strong>
         </div>
 
@@ -39,9 +39,8 @@
 
     </div>
 
-
     <div id="playerName">
-        🏃 Street Runner
+        🦁 LION CHASE
     </div>
 
 
@@ -49,17 +48,50 @@
 
         <div class="sky"></div>
 
-        <div class="city city-back"></div>
-        <div class="city city-front"></div>
+        <div class="mountain mountain-one"></div>
+        <div class="mountain mountain-two"></div>
 
-        <div class="road">
+        <div class="forest-background">
 
-            <div class="lane-line line-one"></div>
-            <div class="lane-line line-two"></div>
+            <div class="tree bg-tree tree-a">🌲</div>
+            <div class="tree bg-tree tree-b">🌲</div>
+            <div class="tree bg-tree tree-c">🌲</div>
+            <div class="tree bg-tree tree-d">🌲</div>
+
+        </div>
+
+
+        <div class="trail">
+
+            <div class="trail-line line-one"></div>
+            <div class="trail-line line-two"></div>
+
+            <div class="side-tree left-tree one">🌲</div>
+            <div class="side-tree left-tree two">🌲</div>
+            <div class="side-tree left-tree three">🌳</div>
+
+            <div class="side-tree right-tree one">🌲</div>
+            <div class="side-tree right-tree two">🌲</div>
+            <div class="side-tree right-tree three">🌳</div>
+
+
+            <div id="objects"></div>
+
+
+            <!-- LION -->
+
+            <div id="lion" class="lion">
+                🦁
+            </div>
+
+
+            <!-- RUNNER -->
 
             <div id="player" class="player">
 
                 <div class="head"></div>
+
+                <div class="hair"></div>
 
                 <div class="body"></div>
 
@@ -71,40 +103,48 @@
 
             </div>
 
-            <div id="objects"></div>
-
         </div>
 
 
+        <div id="distanceMessage">
+            RUN! 🦁
+        </div>
+
+
+        <!-- START SCREEN -->
+
         <div id="startScreen">
 
-            <div class="game-logo">
-                🏃
+            <div class="start-lion">
+                🦁
             </div>
 
-            <h1>STREET RUNNER</h1>
+            <h1>LION CHASE</h1>
 
             <p>
-                Run as far as you can!
+                Run through the forest<br>
+                and escape the lion!
             </p>
 
             <button onclick="startGame()">
-                🚀 START RUN
+                🏃 START RUN
             </button>
 
         </div>
 
 
+        <!-- GAME OVER -->
+
         <div id="gameOver">
 
             <div class="game-over-icon">
-                💥
+                😱🦁
             </div>
 
-            <h2>GAME OVER</h2>
+            <h2>THE LION CAUGHT YOU!</h2>
 
             <p id="finalScore">
-                Score: 0
+                Distance: 0
             </p>
 
             <button onclick="startGame()">
