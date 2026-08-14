@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width,
+          initial-scale=1.0,
+          maximum-scale=1.0,
+          user-scalable=no">
+
+    <title>Street Runner</title>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="game">
+
+    <div class="top-bar">
+
+        <div>
+            <span>SCORE</span>
+            <strong id="score">0</strong>
+        </div>
+
+        <div>
+            <span>COINS</span>
+            <strong id="coins">0</strong>
+        </div>
+
+        <div>
+            <span>BEST</span>
+            <strong id="best">0</strong>
+        </div>
+
+    </div>
+
+
+    <div id="playerName">
+        🏃 Street Runner
+    </div>
+
+
+    <div id="gameArea">
+
+        <div class="sky"></div>
+
+        <div class="city city-back"></div>
+        <div class="city city-front"></div>
+
+        <div class="road">
+
+            <div class="lane-line line-one"></div>
+            <div class="lane-line line-two"></div>
+
+            <div id="player" class="player">
+
+                <div class="head"></div>
+
+                <div class="body"></div>
+
+                <div class="arm arm-left"></div>
+                <div class="arm arm-right"></div>
+
+                <div class="leg leg-left"></div>
+                <div class="leg leg-right"></div>
+
+            </div>
+
+            <div id="objects"></div>
+
+        </div>
+
+
+        <div id="startScreen">
+
+            <div class="game-logo">
+                🏃
+            </div>
+
+            <h1>STREET RUNNER</h1>
+
+            <p>
+                Run as far as you can!
+            </p>
+
+            <button onclick="startGame()">
+                🚀 START RUN
+            </button>
+
+        </div>
+
+
+        <div id="gameOver">
+
+            <div class="game-over-icon">
+                💥
+            </div>
+
+            <h2>GAME OVER</h2>
+
+            <p id="finalScore">
+                Score: 0
+            </p>
+
+            <button onclick="startGame()">
+                🔄 RUN AGAIN
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="controls">
+
+        <button id="leftButton">
+            ⬅️
+        </button>
+
+        <button id="jumpButton">
+            ⬆️
+            <small>JUMP</small>
+        </button>
+
+        <button id="rightButton">
+            ➡️
+        </button>
+
+    </div>
+
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>
